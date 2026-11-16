@@ -13,7 +13,7 @@ export default function GuideAside() {
         aria-expanded="false"
         aria-controls="guideMenu"
         aria-label="Open Nila’s shortcuts"
-        dangerouslySetInnerHTML={{ __html: buildGuide() }}
+        dangerouslySetInnerHTML={{ __html: buildGuide("ng") }}
       />
       <div className="guide__menu" id="guideMenu" hidden>
         <p className="mono">Where to?</p>

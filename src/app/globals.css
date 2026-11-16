@@ -1050,8 +1050,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--ink);
 }
 .docs__mascot {
-  width: 76px;
-  height: 160px;
+  width: 112px;
+  height: 224px;
   flex-shrink: 0;
 }
 .docs__mascot svg {
@@ -1078,8 +1078,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
     margin-bottom: 16px;
   }
   .docs__mascot {
-    width: 60px;
-    height: 126px;
+    width: 76px;
+    height: 152px;
   }
 }
 .docs__grid .scroll-stack.scroll-stack--window {
@@ -1166,6 +1166,40 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .scroll-stack-card__shade {
   background: #3A2A34 !important;
+}
+
+/* Paperwork cards: a rubber stamp lands on each card as it settles into the stack */
+.paperwork-stampzone {
+  --stamp: clamp(84px, 18vw, 118px);
+  position: absolute;
+  right: 5%;
+  top: calc(58% + 6px);
+  width: var(--stamp);
+  height: var(--stamp);
+  pointer-events: none;
+}
+.paperwork-stamp {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+  mix-blend-mode: multiply;
+}
+.paperwork-stamper {
+  position: absolute;
+  left: 4%;
+  bottom: 50%;
+  width: 92%;
+  height: auto;
+  opacity: 0;
+  visibility: hidden;
+  filter: drop-shadow(0 10px 12px rgba(58, 15, 52, 0.28));
+}
+@media (max-width: 899px) {
+  .paperwork-stampzone {
+    right: 4%;
+  }
 }
 
 /* ==========================================================================

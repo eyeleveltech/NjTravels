@@ -49,6 +49,9 @@ export const ScrollStackItem = ({ children, itemClassName = '', style = undefine
  * @param {boolean} [props.snap]
  * @param {boolean} [props.useWindowScroll]
  * @param {(() => void) | undefined} [props.onStackComplete]
+ * @param {number} [props.revealOffset] px above its pin at which a card counts as landed
+ * @param {((index: number, card: HTMLElement) => void) | undefined} [props.onItemReveal] a card has landed in the stack
+ * @param {((index: number, card: HTMLElement) => void) | undefined} [props.onItemReset] a landed card scrolled back out of the stack
  */
 const ScrollStack = ({
   children,
@@ -66,7 +69,10 @@ const ScrollStack = ({
   smoothScroll = true,
   snap = false,
   useWindowScroll = false,
-  onStackComplete = undefined
+  onStackComplete = undefined,
+  revealOffset = 60,
+  onItemReveal = undefined,
+  onItemReset = undefined
 }) => {
   const rootRef = useRef(null);
   const innerRef = useRef(null);
@@ -89,7 +95,10 @@ const ScrollStack = ({
       holdDistance,
       smoothScroll,
       snap,
-      onStackComplete
+      onStackComplete,
+      revealOffset,
+      onItemReveal,
+      onItemReset
     };
     scheduleRef.current?.();
   });
@@ -104,6 +113,7 @@ const ScrollStack = ({
     const target = windowed ? window : root;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const cache = new Map();
+    const revealed = new Set();
     let frame = 0;
     let glide = 0;
     let rest = 0;
@@ -187,6 +197,15 @@ const ScrollStack = ({
         const stuck = natural <= pin;
         const depth = depths[i];
         const shade = card.querySelector('.scroll-stack-card__shade');
+
+        // Landed: the card has (nearly) reached its pin. Leaving: scrolled well back below it.
+        if (!revealed.has(i) && natural <= pin + settings.revealOffset) {
+          revealed.add(i);
+          settings.onItemReveal?.(i, card);
+        } else if (revealed.has(i) && natural > pin + viewHeight * 0.6) {
+          revealed.delete(i);
+          settings.onItemReset?.(i, card);
+        }
 
         if (motion.matches) {
           write(`transform:${i}`, '', value => {
