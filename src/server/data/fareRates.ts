@@ -60,21 +60,21 @@ export const SERVER_FARE_RATES: Record<string, ServerFareRate> = {
 
 /**
  * Maps vehicle id or name to fare category per Step 6.2.f:
- * - Swift -> Hatchback
+ * - Swift, WagonR -> Hatchback
  * - Etios, Aura -> Sedan
  * - Ertiga, XL6, Marazzo -> SUV
  * - Innova Crysta, Innova Hycross, Toyota Innova -> Premium SUV
- * - 12/14 seater AC van -> Tempo Traveller
+ * - 12 seater AC van, 14 seater AC van -> Tempo Traveller
  * - 12/17 seater luxury van -> Luxury Van
  * - BMW 5 Series, Mercedes-Benz E-Class, Audi A6 -> Luxury
  */
 export function mapVehicleToFareCategory(vehicleIdOrName: string): string {
   const norm = (vehicleIdOrName || "").toLowerCase();
-  if (norm.includes("swift")) return "Hatchback";
+  if (norm.includes("swift") || norm.includes("wagonr") || norm.includes("wagon")) return "Hatchback";
   if (norm.includes("etios") || norm.includes("aura") || norm === "sedan") return "Sedan";
   if (norm.includes("ertiga") || norm.includes("xl6") || norm.includes("marazzo") || norm === "suv") return "SUV";
   if (norm.includes("crysta") || norm.includes("hycross") || norm.includes("innova") || norm === "premium suv") return "Premium SUV";
-  if (norm.includes("van14") || norm.includes("14") || norm.includes("tempo") || norm.includes("traveller")) return "Tempo Traveller";
+  if (norm.includes("van14") || norm.includes("van12") || norm.includes("18") || norm.includes("14") || norm.includes("12") || norm.includes("tempo") || norm.includes("traveller")) return "Tempo Traveller";
   if (norm.includes("urbania") || norm.includes("van") || norm === "luxury van") return "Luxury Van";
   if (norm.includes("bmw") || norm.includes("mercedes") || norm.includes("audi") || norm === "luxury") return "Luxury";
   return "Sedan";

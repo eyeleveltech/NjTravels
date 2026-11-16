@@ -15,7 +15,7 @@ interface VehicleBookingContextType {
 const VehicleBookingContext = createContext<VehicleBookingContextType | undefined>(undefined);
 
 export function VehicleBookingProvider({ children }: { children: React.ReactNode }) {
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string>(FLEET[0]?.id || "swift");
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string>(FLEET[0]?.id || "wagonr");
   const [isFromShowcase, setIsFromShowcase] = useState<boolean>(false);
   const [wizardResetTrigger, setWizardResetTrigger] = useState<number>(0);
 

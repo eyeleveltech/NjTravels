@@ -8,7 +8,9 @@ export default function EnquireSection() {
       id="enquire"
       data-nila="Tell me where you’re going. Sending opens WhatsApp with your details."
       data-nila-pose="wave"
+      style={{ position: "relative" }}
     >
+      <span id="enquiry" style={{ position: "absolute", top: 0, left: 0, scrollMarginTop: "90px" }} aria-hidden="true" />
       <div className="wrap enquire__grid">
         <div className="enquire__intro">
           <p className="eyebrow">Plan a trip</p>

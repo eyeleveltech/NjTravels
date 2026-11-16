@@ -61,7 +61,8 @@ export default function RideSection() {
   const positionCounter = `${String(safeIndex + 1).padStart(2, "0")} / ${String(FLEET.length).padStart(2, "0")}`;
 
   return (
-    <section className="ride sec" id="ride" data-nila-hide>
+    <section className="ride sec" id="ride" data-nila-hide style={{ position: "relative" }}>
+      <span id="fleet" style={{ position: "absolute", top: 0, left: 0, scrollMarginTop: "90px" }} aria-hidden="true" />
       <div className="wrap">
         <header className="sec-head">
           <div>

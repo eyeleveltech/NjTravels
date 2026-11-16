@@ -132,7 +132,7 @@ export default function StrengthDashboard() {
         </div>
         <div>
           <dt>Travellers served</dt>
-          <dd>10,000+</dd>
+          <dd>100,000+</dd>
         </div>
       </dl>
     </div>

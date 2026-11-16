@@ -10,7 +10,9 @@ export default function DocsSection() {
       className="docs sec"
       id="docs"
       data-nila-hide
+      style={{ position: "relative" }}
     >
+      <span id="visas" style={{ position: "absolute", top: 0, left: 0, scrollMarginTop: "90px" }} aria-hidden="true" />
       <div className="wrap docs__grid">
         <div className="docs__head">
           <p className="eyebrow">Before you fly</p>
@@ -37,19 +39,19 @@ export default function DocsSection() {
           smoothScroll={false}
           snap={false}
           stackPosition={120}
-          itemDistance={60}
-          itemStackDistance={26}
-          itemScale={0.04}
-          baseScale={0.9}
+          itemDistance={120}
+          itemStackDistance={48}
+          itemScale={0.035}
+          baseScale={0.92}
           dimAmount={0.15}
           blurAmount={0}
           tiltAmount={0}
           rotationAmount={0}
-          holdDistance={40}
+          holdDistance={60}
         >
           <ScrollStackItem itemClassName="paperwork-card">
             <img
-              src="/assets/img/visa-services.png"
+              src="/assets/img/visa-services-clean.webp"
               alt="Traveller documents and passport prepared for visa services"
               className="paperwork-card__img"
               loading="lazy"
@@ -58,6 +60,7 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
+              <span className="paperwork-card__label">01 / 04</span>
               <h3 className="paperwork-card__title">Visa services</h3>
               <p className="paperwork-card__text">
                 Tourist, visit, business and student visas. Family and group
@@ -68,7 +71,7 @@ export default function DocsSection() {
 
           <ScrollStackItem itemClassName="paperwork-card">
             <img
-              src="/assets/img/passport-services.png"
+              src="/assets/img/passport-services-clean.webp"
               alt="Official passport documents ready for passport renewals and services"
               className="paperwork-card__img"
               loading="lazy"
@@ -77,6 +80,7 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
+              <span className="paperwork-card__label">02 / 04</span>
               <h3 className="paperwork-card__title">Passport services</h3>
               <p className="paperwork-card__text">
                 New passports, renewals and reissues, corrections and
@@ -96,6 +100,7 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
+              <span className="paperwork-card__label">03 / 04</span>
               <h3 className="paperwork-card__title">Certificate attestation</h3>
               <p className="paperwork-card__text">
                 Educational, marriage and birth certificates, commercial
@@ -115,6 +120,7 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
+              <span className="paperwork-card__label">04 / 04</span>
               <h3 className="paperwork-card__title">Travel insurance</h3>
               <p className="paperwork-card__text">
                 Domestic and international travel insurance.

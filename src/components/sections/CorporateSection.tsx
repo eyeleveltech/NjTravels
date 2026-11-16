@@ -88,7 +88,7 @@ export default function CorporateSection() {
             </p>
           </div>
           <div className="travel-desks-col">
-            <h3 className="travel-desks-title">Medical journeys, thoughtfully arranged.</h3>
+            <h3 className="travel-desks-title">Medical tourism</h3>
             <p className="travel-desks-desc">
               Travel support for medical consultations, treatments and wellness journeys. From flights and accommodation to local transfers and travel coordination, our team helps arrange the essentials for a smoother experience.
             </p>

@@ -43,8 +43,8 @@ export const CONTACT_DETAILS: ContactInfo = {
     label: "Message on WhatsApp",
   },
   email: {
-    address: "booking@sahitravels.com",
-    mailtoLink: "mailto:booking@sahitravels.com",
+    address: "sahitravelservices@gmail.com",
+    mailtoLink: "mailto:sahitravelservices@gmail.com",
   },
   website: {
     url: "https://www.sahitravels.com",
@@ -56,4 +56,29 @@ export const CONTACT_DETAILS: ContactInfo = {
   },
   offices: CONTACT_OFFICES,
 };
+
+export interface SocialLink {
+  label: string;
+  url: string;
+  platform: "instagram" | "facebook" | "linkedin" | "x" | "youtube" | "whatsapp";
+}
+
+export const SOCIAL_LINKS: SocialLink[] = [
+  {
+    label: "Instagram",
+    url: "https://www.instagram.com/sahitravelservices_jahubar?psln=MXE4bThkZW14NDB2NQ==",
+    platform: "instagram",
+  },
+  {
+    label: "Facebook",
+    url: "https://www.facebook.com/share/1CdFtLJsH6/",
+    platform: "facebook",
+  },
+  {
+    label: "WhatsApp",
+    url: "https://wa.me/918608925574",
+    platform: "whatsapp",
+  },
+];
+
 

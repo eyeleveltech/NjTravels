@@ -96,7 +96,7 @@ export function useSiteAnimations() {
       phoneDisplay: "+91 8608925574",
       phoneDial: "+918608925574",
       whatsapp: "918608925574",
-      email: "booking@sahitravels.com",
+      email: "sahitravelservices@gmail.com",
     };
 
     const $ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document): T | null =>
@@ -491,20 +491,25 @@ export function useSiteAnimations() {
       }
     };
 
-    const anchorLinks = $$<HTMLAnchorElement>('a[href^="#"]');
+    const anchorLinks = $$<HTMLAnchorElement>('a[href^="#"], a[href^="/#"]');
     const handleAnchorClick = (e: MouseEvent) => {
       const a = (e.currentTarget as HTMLAnchorElement);
-      const id = a.getAttribute("href");
-      if (!id || id.length < 2) return;
-      const t = $(id);
-      if (!t) return;
-      e.preventDefault();
-      scrollToTarget(id === "#top" ? 0 : t);
+      const rawHref = a.getAttribute("href") || "";
+      const hash = rawHref.includes("#") ? rawHref.substring(rawHref.indexOf("#")) : "";
+      if (!hash || hash.length < 2) return;
+      if (typeof window !== "undefined" && (window.location.pathname === "/" || window.location.pathname === "")) {
+        const t = $(hash);
+        if (t) {
+          e.preventDefault();
+          scrollToTarget(hash === "#top" ? 0 : t);
+          window.history.pushState(null, "", hash);
+        }
+      }
     };
     anchorLinks.forEach((a) => a.addEventListener("click", handleAnchorClick));
 
     // Handle initial hash navigation after layout settles
-    if (window.location.hash) {
+    if (typeof window !== "undefined" && window.location.hash) {
       const initialTarget = $(window.location.hash);
       if (initialTarget) {
         setTimeout(() => {
@@ -526,6 +531,7 @@ export function useSiteAnimations() {
         onUpdate: (self) => {
           if (!menu?.classList.contains("is-open")) {
             nav.classList.toggle("nav--hidden", self.direction === 1 && self.scroll() > window.innerHeight * 0.7);
+            nav.classList.toggle("nav--scrolled", self.scroll() > 40);
           }
         },
       });
@@ -755,13 +761,60 @@ export function useSiteAnimations() {
 
       if (reduce) {
         section.classList.add("is-static");
-        gsap.set(cards, { autoAlpha: 1 });
+        let activeIdx = 0;
+        const setCardInstant = (idx: number) => {
+          activeIdx = idx;
+          steps.forEach((b, i) => {
+            const on = i === idx;
+            b.classList.toggle("is-on", on);
+            b.setAttribute("aria-selected", on ? "true" : "false");
+            b.tabIndex = on ? 0 : -1;
+          });
+          cards.forEach((c, i) => {
+            c.classList.toggle("is-active", i === idx);
+            gsap.set(c, { autoAlpha: i === idx ? 1 : 0, y: 0 });
+          });
+        };
+        setCardInstant(0);
+        steps.forEach((b, i) => {
+          b.addEventListener("click", () => {
+            setCardInstant(i);
+            b.focus();
+          });
+          b.addEventListener("keydown", (e) => {
+            let nextIdx = -1;
+            if (e.key === "ArrowRight" || e.key === "ArrowDown") nextIdx = (i + 1) % steps.length;
+            else if (e.key === "ArrowLeft" || e.key === "ArrowUp") nextIdx = (i - 1 + steps.length) % steps.length;
+            else if (e.key === "Home") nextIdx = 0;
+            else if (e.key === "End") nextIdx = steps.length - 1;
+            if (nextIdx !== -1) {
+              e.preventDefault();
+              steps[nextIdx].focus();
+              steps[nextIdx].click();
+            }
+          });
+        });
         return;
       }
 
-      const STAGES = [0, 2.3, 10.7, 12.1, 13.5, 14.85];
+      const STAGES = [0, 2.3, 9.55, 10.7, 12.1, 13.5, 14.85];
       gsap.set(cards, { autoAlpha: 0, y: 16 });
       if (cards[0]) gsap.set(cards[0], { autoAlpha: 1, y: 0 });
+
+      let currentStepIdx = 0;
+      const updateStepUi = (idx: number) => {
+        if (idx === currentStepIdx) return;
+        currentStepIdx = idx;
+        steps.forEach((b, i) => {
+          const on = i === idx;
+          b.classList.toggle("is-on", on);
+          b.setAttribute("aria-selected", on ? "true" : "false");
+          b.tabIndex = on ? 0 : -1;
+        });
+        cards.forEach((c, i) => {
+          c.classList.toggle("is-active", i === idx);
+        });
+      };
 
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -780,7 +833,7 @@ export function useSiteAnimations() {
           STAGES.forEach((s, i) => {
             if (t >= s - 0.01) idx = i;
           });
-          steps.forEach((b, i) => b.classList.toggle("is-on", i === idx));
+          updateStepUi(idx);
           if (bar) gsap.set(bar, { scaleX: tl.progress() });
         },
       });
@@ -977,22 +1030,44 @@ export function useSiteAnimations() {
       tl.to(petals, { y: "+=880", x: "random(-70, 70)", rotation: "random(-300, 300)", duration: 1.2, stagger: 0.015 }, 14.85);
       tl.to({}, { duration: 0.5 }, 16.15);
 
-      // caption cards
+      // caption cards crossfade over 300ms (0.15s out + 0.15s in)
       STAGES.forEach((t, i) => {
         if (!i) return;
-        if (cards[i - 1]) tl.to(cards[i - 1], { autoAlpha: 0, y: -14, duration: 0.12 }, t - 0.12);
+        if (cards[i - 1]) tl.to(cards[i - 1], { autoAlpha: 0, y: -14, duration: 0.15 }, t - 0.15);
         if (cards[i]) tl.to(cards[i], { autoAlpha: 1, y: 0, duration: 0.15 }, t);
       });
 
-      // stepper jumps along the scroll range
-      steps.forEach((b, i) =>
+      // stepper jumps along the scroll range, crossfades card, and keyboard arrow navigation
+      steps.forEach((b, i) => {
         b.addEventListener("click", () => {
+          updateStepUi(i);
+          cards.forEach((card, idx) => {
+            if (idx === i) {
+              gsap.to(card, { autoAlpha: 1, y: 0, duration: 0.3, ease: "power2.out", overwrite: true });
+            } else {
+              gsap.to(card, { autoAlpha: 0, y: -14, duration: 0.3, ease: "power2.in", overwrite: true });
+            }
+          });
           const st = tl.scrollTrigger;
           if (!st) return;
-          const pos = st.start + ((STAGES[i] + (i ? 0.25 : 0)) / tl.duration()) * (st.end - st.start);
+          const targetStage = STAGES[i] + (i ? 0.25 : 0);
+          const pos = st.start + (targetStage / tl.duration()) * (st.end - st.start);
           scrollToTarget(pos);
-        })
-      );
+        });
+
+        b.addEventListener("keydown", (e) => {
+          let nextIdx = -1;
+          if (e.key === "ArrowRight" || e.key === "ArrowDown") nextIdx = (i + 1) % steps.length;
+          else if (e.key === "ArrowLeft" || e.key === "ArrowUp") nextIdx = (i - 1 + steps.length) % steps.length;
+          else if (e.key === "Home") nextIdx = 0;
+          else if (e.key === "End") nextIdx = steps.length - 1;
+          if (nextIdx !== -1) {
+            e.preventDefault();
+            steps[nextIdx].focus();
+            steps[nextIdx].click();
+          }
+        });
+      });
     });
 
 

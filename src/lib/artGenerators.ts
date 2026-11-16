@@ -170,7 +170,7 @@
   </g>`;
   const pax = (x, y, p) => `<g transform="translate(${x} ${y})"><path d="M-10 15Q0 11 10 15L12 30H-12Z" fill="${p[2]}"/><ellipse cx="0" cy="0" rx="9" ry="10.5" fill="${p[0]}"/><path d="M-9.5 -2Q-9 -13 0 -13Q9 -13 9.5 -2Q5 -8 0 -8Q-5 -8 -9.5 -2Z" fill="${p[1]}"/><circle cx="-3.3" cy="0" r="1.1" fill="${C.hair}"/><circle cx="3.3" cy="0" r="1.1" fill="${C.hair}"/><path d="M-2.6 4Q0 6 2.6 4" stroke="${C.lip}" stroke-width="1" fill="none"/></g>`;
 
-  const wheel = (cx: any, cy: any, r: any) => `<g class="wheel"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${C.tire}"/><circle cx="${cx}" cy="${cy}" r="${(r * .58).toFixed(1)}" fill="${C.hub}"/><path d="M${cx - r * .5} ${cy}H${cx + r * .5}M${cx} ${cy - r * .5}V${cy + r * .5}" stroke="#9AA6BD" stroke-width="${(r * .13).toFixed(1)}"/><circle cx="${cx}" cy="${cy - r * .8}" r="${(r * .1).toFixed(1)}" fill="#59637A"/><circle cx="${cx}" cy="${cy}" r="${(r * .17).toFixed(1)}" fill="${C.navy}"/></g>`;
+  const wheel = (cx: any, cy: any, r: any) => `<g class="wheel"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${C.tire}"/><circle cx="${cx}" cy="${cy}" r="${(r * .58).toFixed(1)}" fill="${C.hub}"/><path d="M${cx - r * .5} ${cy}H${cx + r * .5}M${cx} ${cy - r * .5}V${cy + r * .5}" stroke="#9AA6BD" stroke-width="${(r * .13).toFixed(1)}"/><circle cx="${cx}" cy="${(cy - r * .8).toFixed(1)}" r="${(r * .1).toFixed(1)}" fill="#59637A"/><circle cx="${cx}" cy="${cy}" r="${(r * .17).toFixed(1)}" fill="${C.navy}"/></g>`;
   const arch = (cx, by, r) => `<path d="M${cx - r - 5} ${by}A${r + 5} ${r + 5} 0 0 1 ${cx + r + 5} ${by}Z" fill="#2A3142"/>`;
   const win = (id, d, inner, fill = C.glassL) => `<clipPath id="${id}"><path d="${d}"/></clipPath><path d="${d}" fill="${fill}"/><g clip-path="url(#${id})">${inner}</g>`;
 
@@ -451,7 +451,7 @@
         <text x="148" y="170" class="pp-l">SINCE</text><text x="148" y="187" class="pp-v">2000</text>
         <text x="44" y="216" class="pp-l">OFFICES</text><text x="44" y="233" class="pp-v">CHENNAI · KEELAKARAI</text>
         <text x="44" y="300" class="pp-m">P&lt;SAHI&lt;&lt;NILA&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</text>
-        <text x="44" y="320" class="pp-m">MAA2000&lt;&lt;10000&lt;TRAVELLERS&lt;</text>
+        <text x="44" y="320" class="pp-m">MAA2000&lt;&lt;100000&lt;TRAVELLERS&lt;</text>
         <text x="302" y="56" class="pp-l">VISAS · ENTRIES</text>
         ${S}
       </g>
