@@ -1,4 +1,4 @@
-export interface ServerFareRate {
+export interface FareRate {
   category: string;
   ratePerKm: number;
   driverBattaPerDay: number;
@@ -6,7 +6,7 @@ export interface ServerFareRate {
   minKmPerDay: number;
 }
 
-export const SERVER_FARE_RATES: Record<string, ServerFareRate> = {
+export const FARE_RATES: Record<string, FareRate> = {
   Hatchback: {
     category: "Hatchback",
     ratePerKm: 12,

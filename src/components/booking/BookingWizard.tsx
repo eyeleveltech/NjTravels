@@ -6,6 +6,8 @@ import { FLEET } from "@/data/fleet";
 import { CONTACT_DETAILS } from "@/data/contact";
 import { useVehicleBooking } from "@/context/VehicleBookingContext";
 import { playStamp } from "@/hooks/useSiteAnimations";
+import { estimateFare, type EstimateResult } from "@/lib/fareEstimate";
+import { searchPlaces } from "@/lib/placeSearch";
 
 export interface PlaceSelection {
   id?: string;
@@ -17,29 +19,6 @@ export interface PlaceSelection {
   lng?: number;
   isFreeText?: boolean;
 }
-
-export type EstimateResult =
-  | {
-      type: "calculated";
-      total: number;
-      billableKm: number;
-      distanceCharge: number;
-      driverBatta: number;
-      nightAllowance: number;
-      days: number;
-      nights: number;
-      distanceText?: string;
-      distance?: number;
-      returnDistance?: number;
-      totalKm?: number;
-      ratePerKm?: number;
-      indicative?: boolean;
-    }
-  | {
-      type: "team-to-confirm" | "local" | "error";
-      message?: string;
-      indicative?: boolean;
-    };
 
 export const TIME_SLOTS = [
   "4–6 AM",
@@ -191,7 +170,7 @@ export default function BookingWizard() {
     return FLEET.find((v) => v.id === selectedVehicleId) || FLEET[0];
   }, [selectedVehicleId]);
 
-  // Fetch estimate from server when reaching Screen 5 (Notes & Review)
+  // Calculate the estimate when reaching Screen 5 (Notes & Review)
   useEffect(() => {
     if (screenIndex !== 4) return;
 
@@ -211,13 +190,8 @@ export default function BookingWizard() {
       vehicleCategory: currentVehicle.name,
     };
 
-    fetch("/api/estimate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((data: EstimateResult) => {
+    estimateFare(payload)
+      .then((data) => {
         if (isMounted) {
           setEstimateData(data);
           setIsEstimating(false);
@@ -1409,8 +1383,7 @@ function LocationSearchBox({
     abortCtrlRef.current = ctrl;
 
     const timer = setTimeout(() => {
-      fetch(`/api/places?q=${encodeURIComponent(q)}`, { signal: ctrl.signal })
-        .then((res) => res.json())
+      searchPlaces(q, ctrl.signal)
         .then((data: PlaceSelection[]) => {
           cacheRef.current.set(q.toLowerCase(), data);
           setResults(data);

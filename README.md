@@ -23,7 +23,7 @@ A modern, high-performance website for **Sahi Travels / NJ Travel Service** (Ope
 
 ### Prerequisites
 
-- Node.js 18.18+ or 20+
+- Node.js 20.9+
 - npm, yarn, or pnpm
 
 ### Installation
@@ -42,7 +42,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Production Build
 
+The site is a static export: there is no Node server in production.
+
 ```bash
 npm run build
-npm run start
 ```
+
+This writes the finished site to `out/`. Point the web server's document root at that folder (Apache: `DocumentRoot /path/to/project/out`). After pulling new code, run `npm ci && npm run build` again; no restart is needed.
