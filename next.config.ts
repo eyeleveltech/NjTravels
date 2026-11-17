@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   // The default image optimizer needs a server.
   images: { unoptimized: true },
   devIndicators: false,
+  experimental: {
+    agentUpgrade: "security",
+  },
   turbopack: {
     rules: {
       "*.css": {
