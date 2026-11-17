@@ -22,7 +22,7 @@ export default function HeroSection() {
           </p>
           <div className="hero__ctas">
             <a className="btn btn--navy" href="#journey">
-              Ride along with Nila <span className="btn__arrow" aria-hidden="true">→</span>
+              Ride along with Sahi <span className="btn__arrow" aria-hidden="true">→</span>
             </a>
             <a className="btn btn--line" href="#enquire">
               Plan a trip

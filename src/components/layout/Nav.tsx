@@ -129,7 +129,7 @@ export default function Nav() {
     <>
       <header className={`nav ${isScrolled ? "nav--scrolled" : ""}`} id="nav">
         <Link className="brand" href="/" aria-label="Sahi Travels — Home">
-          <svg viewBox="0 0 24 32" aria-hidden="true">
+          <svg viewBox="0 0 24 32" aria-hidden="true" className="brand__logo">
             <rect
               x="2"
               y="2"
@@ -148,8 +148,13 @@ export default function Nav() {
               strokeLinecap="round"
             />
           </svg>
-          <span className="brand__word">SAHI</span>
-          <span className="brand__sub">Travels</span>
+          <span className="brand__content" style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+            <span className="brand__wordmark" style={{ display: "inline-flex", alignItems: "baseline", gap: "7px" }}>
+              <span className="brand__word">SAHI</span>
+              <span className="brand__sub">Travels</span>
+            </span>
+            <span className="brand__tagline" style={{ display: "block" }}>Operated by NJ Travel Service</span>
+          </span>
         </Link>
 
         <nav className="nav__links" aria-label="Primary">

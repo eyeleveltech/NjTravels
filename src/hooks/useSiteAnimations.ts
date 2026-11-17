@@ -138,59 +138,8 @@ export function useSiteAnimations() {
       el.textContent = String(new Date().getFullYear());
     });
 
-    const form = $<HTMLFormElement>("#enquiry");
-    const formMsg = form ? $(".ticket__msg", form) : null;
+    const form = null as HTMLFormElement | null;
     let onSent = () => {};
-
-    const handleFormSubmit = (e: SubmitEvent) => {
-      e.preventDefault();
-      if (!form || !formMsg) return;
-      const d = Object.fromEntries(new FormData(form)) as Record<string, string>;
-      const missing = ["name", "phone", "service"].filter((n) => {
-        const empty = !String(d[n] || "").trim();
-        const fieldEl = form.elements.namedItem(n) as HTMLElement | null;
-        fieldEl?.closest(".field")?.classList.toggle("is-invalid", empty);
-        return empty;
-      });
-      if (missing.length) {
-        const words: Record<string, string> = {
-          name: "your name",
-          phone: "a phone number",
-          service: "what you need",
-        };
-        formMsg.textContent = "Add " + missing.map((m) => words[m]).join(", ") + " so we can reply.";
-        formMsg.classList.add("is-error");
-        (form.elements.namedItem(missing[0]) as HTMLElement | null)?.focus();
-        return;
-      }
-      formMsg.classList.remove("is-error");
-      const lines = [
-        "Hello Sahi Travels, I would like help with: " + d.service,
-        "Name: " + d.name,
-        "Phone: " + d.phone,
-        d.from || d.to ? "Route: " + (d.from || "—") + " → " + (d.to || "—") : "",
-        d.date ? "Travel date: " + d.date : "",
-        d.notes ? "Notes: " + d.notes : "",
-      ].filter(Boolean);
-      window.open(
-        "https://wa.me/" + CONTACT.whatsapp + "?text=" + encodeURIComponent(lines.join("\n")),
-        "_blank",
-        "noopener"
-      );
-      formMsg.textContent = "WhatsApp opened in a new tab with your request.";
-      onSent();
-    };
-
-    const handleFormInput = (e: Event) => {
-      const target = e.target as HTMLElement;
-      const f = target.closest(".field");
-      if (f && (target as HTMLInputElement).value?.trim()) f.classList.remove("is-invalid");
-    };
-
-    if (form) {
-      form.addEventListener("submit", (e: Event) => handleFormSubmit(e as SubmitEvent));
-      form.addEventListener("input", handleFormInput);
-    }
 
     // mobile menu
     const menu = $("#menu");

@@ -8,6 +8,7 @@ import SkipLink from "@/components/layout/SkipLink";
 import GuideAside from "@/components/ui/GuideAside";
 import { CONTACT_DETAILS } from "@/data/contact";
 import { officeItems } from "@/data/offices";
+import { submitWeb3Form } from "@/lib/web3forms";
 import gsap from "gsap";
 
 const COUNTRY_DIAL_CODES = [
@@ -265,32 +266,25 @@ export default function ContactPage() {
     const ref = `SAHI-Q${Date.now().toString(36).substring(2, 7).toUpperCase()}`;
     const submissionTime = new Date().toISOString();
 
-    const payloadLines = [
-      `*Sahi Travels Customer Query* [${ref}]`,
-      `Type: query`,
-      `Name: ${fullName.trim()}`,
-      `Mobile: ${countryCode} ${mobileNumber.trim()}`,
-      emailAddress.trim() ? `Email: ${emailAddress.trim()}` : "",
-      `Topic: ${formTopic}`,
-      `Question: ${questionText.trim()}`,
-      searchInput.trim() ? `Searched: ${searchInput.trim()}` : "",
-      `Submitted: ${submissionTime}`,
-    ].filter(Boolean);
-
     try {
-      await new Promise((r) => setTimeout(r, 450));
-
-      const whatsappNumber = CONTACT_DETAILS.whatsapp.number;
-      window.open(
-        `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(payloadLines.join("\n"))}`,
-        "_blank",
-        "noopener"
-      );
+      await submitWeb3Form({
+        subject: `New Customer Query [${ref}] - ${fullName.trim()} (${formTopic})`,
+        from_name: "Sahi Travels Website",
+        reference_id: ref,
+        full_name: fullName.trim(),
+        mobile_number: `${countryCode} ${mobileNumber.trim()}`,
+        email: emailAddress.trim() || undefined,
+        query_topic: formTopic,
+        question: questionText.trim(),
+        searched_faq_term: searchInput.trim() || undefined,
+        submitted_at: submissionTime,
+      });
 
       setSubmitReference(ref);
       setSubmitSuccess(true);
-    } catch {
-      setSubmitError("We could not send your question. Please try again or call us.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "We could not send your question. Please try again or call us.";
+      setSubmitError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -521,28 +515,49 @@ export default function ContactPage() {
                   <div className="query-form-success" role="alert">
                     <h4 className="query-form-success-title">Thank you.</h4>
                     <p className="query-form-success-text">
-                      Our team will reply to your query soon.
+                      Your question has been sent to our customer desk. We will review it and reply back shortly.
                     </p>
                     {submitReference && (
                       <p className="query-form-success-ref mono">
                         Reference: {submitReference}
                       </p>
                     )}
-                    <button
-                      type="button"
-                      className="btn btn--line btn--sm"
-                      onClick={() => {
-                        setSubmitSuccess(false);
-                        setQuestionText("");
-                        setSubmitReference(null);
-                      }}
-                      style={{ marginTop: "16px" }}
-                    >
-                      Ask another question
-                    </button>
+                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "16px" }}>
+                      <a
+                        href={`https://wa.me/${CONTACT_DETAILS.whatsapp.number}?text=${encodeURIComponent(
+                          `Hello Sahi Travels, I sent query [${submitReference}]:\nTopic: ${formTopic}\nQuestion: ${questionText.trim()}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn--navy btn--sm"
+                      >
+                        Chat on WhatsApp <span className="btn__arrow" aria-hidden="true">→</span>
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn--line btn--sm"
+                        onClick={() => {
+                          setSubmitSuccess(false);
+                          setQuestionText("");
+                          setSubmitReference(null);
+                        }}
+                      >
+                        Ask another question
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <form onSubmit={handleFormSubmit} className="query-form" noValidate>
+                    {/* Botcheck honeypot */}
+                    <input
+                      type="checkbox"
+                      name="botcheck"
+                      className="hidden"
+                      style={{ display: "none" }}
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+
                     {/* 1. Full Name */}
                     <div className="query-field">
                       <label htmlFor={`${compId}-name`} className="query-label mono">

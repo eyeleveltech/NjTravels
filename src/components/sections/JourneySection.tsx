@@ -17,7 +17,7 @@ export default function JourneySection() {
           dangerouslySetInnerHTML={{ __html: buildJourney() }}
         />
         <header className="journey__head">
-          <p className="eyebrow">Ride along with Nila</p>
+          <p className="eyebrow">Ride along with Sahi</p>
           <h2 className="h2">
             One trip, every ride — <span className="serif-i">one desk handles it.</span>
           </h2>

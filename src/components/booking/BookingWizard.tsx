@@ -8,6 +8,7 @@ import { useVehicleBooking } from "@/context/VehicleBookingContext";
 import { playStamp } from "@/hooks/useSiteAnimations";
 import { estimateFare, type EstimateResult } from "@/lib/fareEstimate";
 import { searchPlaces } from "@/lib/placeSearch";
+import { submitWeb3Form } from "@/lib/web3forms";
 
 export interface PlaceSelection {
   id?: string;
@@ -462,14 +463,29 @@ export default function BookingWizard() {
     ].filter(Boolean);
 
     try {
-      await new Promise((r) => setTimeout(r, 400));
+      const fareText =
+        estimateData?.type === "calculated"
+          ? `₹${estimateData.total.toLocaleString("en-IN")}`
+          : "Team to confirm";
 
-      const whatsappNumber = CONTACT_DETAILS.whatsapp.number;
-      window.open(
-        `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`,
-        "_blank",
-        "noopener"
-      );
+      await submitWeb3Form({
+        subject: `New Journey Booking [${ref}] - ${name.trim()} (${tripType})`,
+        from_name: "Sahi Travels Booking Wizard",
+        reference_id: ref,
+        trip_type: tripType,
+        pickup_location: `${fromDisp}${fromReg}`,
+        dropoff_location: `${toDisp}${toReg}`,
+        travel_date: travelDate,
+        return_date: tripType === "Round trip" && returnDate ? returnDate : "N/A",
+        time_slot: timeSlot,
+        vehicle: `${currentVehicle.name} (${currentVehicle.seats})`,
+        passengers: passengers,
+        customer_name: name.trim(),
+        mobile_number: `${countryDialCode} ${mobileNumber.trim()}`,
+        email: email.trim() || undefined,
+        notes: notes.trim() || undefined,
+        estimated_fare: fareText,
+      });
 
       setReferenceId(ref);
       setIsSuccess(true);
@@ -486,8 +502,12 @@ export default function BookingWizard() {
           "Thank you! Our team will contact you soon."
         );
       }
-    } catch {
-      setSubmitError("We could not send your enquiry. Please try again or call us.");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "We could not send your enquiry. Please try again or call us.";
+      setSubmitError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -541,20 +561,33 @@ export default function BookingWizard() {
           </div>
 
           <h3 className="wizard-success__heading">Thank you.</h3>
-          <p className="wizard-success__body">Our team will contact you soon.</p>
+          <p className="wizard-success__body">Your booking request has been received. Our team will contact you soon.</p>
           {referenceId && (
             <p className="wizard-success__ref mono">
               Reference: {referenceId}
             </p>
           )}
 
-          <button
-            type="button"
-            className="btn btn--outline wizard-success__reset-btn"
-            onClick={handleResetWizard}
-          >
-            Make another enquiry
-          </button>
+          <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginTop: "20px" }}>
+            <a
+              href={`https://wa.me/${CONTACT_DETAILS.whatsapp.number}?text=${encodeURIComponent(
+                `Hello Sahi Travels, I submitted booking request [${referenceId}]:\nTrip: ${tripType} (${fromPlace?.name || fromQuery} → ${toPlace?.name || toQuery})\nDate: ${travelDate}\nVehicle: ${currentVehicle.name}\nName: ${name.trim()}`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--navy btn--sm"
+            >
+              Chat on WhatsApp <span className="btn__arrow" aria-hidden="true">→</span>
+            </a>
+            <button
+              type="button"
+              className="btn btn--outline wizard-success__reset-btn"
+              onClick={handleResetWizard}
+              style={{ margin: 0 }}
+            >
+              Make another enquiry
+            </button>
+          </div>
         </div>
       </div>
     );
