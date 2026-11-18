@@ -13,6 +13,7 @@ import StrengthSection from "@/components/sections/StrengthSection";
 import EnquireSection from "@/components/sections/EnquireSection";
 import PartnersSection from "@/components/sections/PartnersSection";
 import AffiliationsSection from "@/components/sections/AffiliationsSection";
+import ReviewsSection from "@/components/sections/ReviewsSection";
 import Footer from "@/components/layout/Footer";
 import GuideAside from "@/components/ui/GuideAside";
 import { useSiteAnimations } from "@/hooks/useSiteAnimations";
@@ -36,6 +37,7 @@ export default function Home() {
         <EnquireSection />
         <PartnersSection />
         <AffiliationsSection />
+        <ReviewsSection />
       </main>
       <Footer />
       <GuideAside />

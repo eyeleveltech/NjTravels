@@ -57,7 +57,7 @@ export default function Footer() {
       <div className="wrap">
         <div className="footer__top">
           <p className="footer__line">
-            Your journey. <span className="serif-i">Our responsibility.</span>
+            Your reliable <span className="serif-i">travel partner.</span>
           </p>
           <a className="btn btn--navy" href="#enquire">
             Plan a trip <span className="btn__arrow" aria-hidden="true">→</span>
@@ -135,6 +135,17 @@ export default function Footer() {
           </div>
         </div>
 
+        <div className="footer__brand" style={{ marginTop: "40px", marginBottom: "16px" }}>
+          <img
+            src="/assets/img/logo.png"
+            alt="Sahi Travels logo"
+            className="footer__logo"
+            width={47}
+            height={48}
+            decoding="async"
+            style={{ height: "48px", width: "auto" }}
+          />
+        </div>
         <p className="footer__word display" aria-hidden="true">
           Sahi Travels
         </p>

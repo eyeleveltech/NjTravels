@@ -1,6 +1,7 @@
 import { FARE_RATES, mapVehicleToFareCategory } from "@/data/fareRates";
 import { getFallbackRouteDistance } from "@/data/routes";
 import { PLACE_ALIASES } from "@/data/placeAliases";
+import { FLEET } from "@/data/fleet";
 
 /**
  * Indicative fare estimate, computed in the browser so the site can be served
@@ -41,6 +42,7 @@ export interface EstimateRequest {
   timeSlot?: string;
   vehicleId?: string;
   vehicleCategory?: string;
+  passengers?: number;
 }
 
 const NIGHT_SLOTS = ["6–9 PM", "9 PM–12 AM", "12–4 AM"];
@@ -135,7 +137,7 @@ async function fetchOsrmDistance(
 
 export async function estimateFare(req: EstimateRequest): Promise<EstimateResult> {
   try {
-    const { tripType, from, to, travelDate, returnDate, timeSlot, vehicleId, vehicleCategory } = req;
+    const { tripType, from, to, travelDate, returnDate, timeSlot, vehicleId, vehicleCategory, passengers } = req;
 
     const fromName = typeof from === "string" ? from.trim() : from?.name?.trim() || "";
     const toName = typeof to === "string" ? to.trim() : to?.name?.trim() || "";
@@ -210,8 +212,18 @@ export async function estimateFare(req: EstimateRequest): Promise<EstimateResult
     }
 
     const returnKm = returnDistance ?? distance;
-    // Total Distance = Outbound + Return; Estimated Total = Total Distance × rate per km.
-    // Driver batta, night allowance and min-km multipliers are not added to the displayed estimate.
+    // Passenger capacity validation
+    if (passengers !== undefined && passengers !== null) {
+      const selectedVehicle = FLEET.find((v) => v.id === vehicleId);
+      const maxSeats = selectedVehicle ? parseInt(selectedVehicle.seats.match(/\d+/)?.[0] || "60", 10) : 60;
+      if (passengers > maxSeats) {
+        return {
+          type: "error",
+          message: "Passengers exceed this vehicle's capacity.",
+        };
+      }
+    }
+
     const totalKm = isRoundTrip ? distance + returnKm : distance;
     const distanceCharge = Math.round(totalKm * rate.ratePerKm);
     const driverBatta = rate.driverBattaPerDay * days;
@@ -223,9 +235,11 @@ export async function estimateFare(req: EstimateRequest): Promise<EstimateResult
       nightAllowance = rate.nightAllowancePerNight * nights;
     }
 
+    const total = Math.round(distanceCharge + driverBatta + nightAllowance);
+
     return {
       type: "calculated",
-      total: distanceCharge,
+      total,
       distance,
       returnDistance: isRoundTrip ? returnKm : undefined,
       distanceText: isRoundTrip
@@ -235,7 +249,6 @@ export async function estimateFare(req: EstimateRequest): Promise<EstimateResult
       billableKm: totalKm,
       days,
       nights,
-      ratePerKm: rate.ratePerKm,
       distanceCharge,
       driverBatta,
       nightAllowance,

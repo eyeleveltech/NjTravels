@@ -2,10 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Counter from "@/components/Counter/Counter";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/layout/SkipLink";
@@ -39,7 +37,7 @@ export default function AboutPage() {
         .fromTo(
           ".about-hero__body",
           { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.7 },
+          { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 },
           "-=0.4"
         );
 
@@ -57,7 +55,7 @@ export default function AboutPage() {
         });
       }
 
-      // B. Milestones vertical line draw & item slide-in
+      // B. Solutions vertical line draw & item slide-in
       if (timelineLineRef.current) {
         gsap.fromTo(
           timelineLineRef.current,
@@ -94,24 +92,28 @@ export default function AboutPage() {
         );
       });
 
-      // C. Chips rows entrance
-      gsap.fromTo(
-        ".about-chips__row",
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.15,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".about-chips",
-            start: "top 75%",
-          },
-        }
-      );
+      // C. Key Pillars entrance
+      const pillars = gsap.utils.toArray<HTMLElement>(".about-principle-card");
+      pillars.forEach((item, idx) => {
+        gsap.fromTo(
+          item,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            delay: idx * 0.08,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ".about-principles__grid",
+              start: "top 75%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      });
 
-      // F. CTA section entrance
+      // D. Closing section entrance
       gsap.fromTo(
         ".about-cta__content",
         { opacity: 0, y: 30 },
@@ -150,18 +152,23 @@ export default function AboutPage() {
           <div className="wrap">
             <div className="about-hero__grid">
               <div className="about-hero__text-col">
-                <p className="eyebrow mono about-hero__eyebrow">ABOUT SAHI TRAVELS</p>
+                <p className="eyebrow mono about-hero__eyebrow">
+                  OPERATED BY NJ TRAVEL SERVICE • EST. 2000 • CHENNAI
+                </p>
                 <h1 id="about-heading" className="h1 about-hero__heading">
                   <span className="about-hero__heading-mask">
-                    <span className="about-hero__heading-line">Your Journey.</span>
+                    <span className="about-hero__heading-line">25+ Years of Trusted Heritage,</span>
                   </span>
                   <br />
                   <span className="about-hero__heading-mask">
-                    <span className="about-hero__heading-line serif-i">Our Responsibility.</span>
+                    <span className="about-hero__heading-line serif-i">Driven by Modern Innovation</span>
                   </span>
                 </h1>
                 <p className="about-hero__body">
-                  Sahi Travels is a professionally managed travel and transportation company with a journey that began in 2000 in Keelakarai, Ramanathapuram District. With a strong foundation built on trust, service and customer satisfaction, Sahi Travels expanded its presence to Chennai in 2005 and continued to grow as a comprehensive travel service provider. Over the years, we have served 10,000+ travellers and successfully covered more than 20 lakh kilometres through our travel and transportation operations, reflecting our commitment to safe, dependable and comfortable journeys. Today, Sahi Travels provides a wide range of travel, tourism, documentation, transportation, event and premium travel solutions for individuals, families, businesses, groups, VIP guests and production teams.
+                  Every great journey begins with a strong foundation. Founded in the year 2000, Sahi Travels embarked on its journey with a singular, noble mission: to provide every traveler with a safe, seamless, and unforgettable travel experience. Built on customer trust and warmth, it stands today as a proud and iconic identity in the travel industry.
+                </p>
+                <p className="about-hero__body">
+                  Today, that trusted legacy is spearheaded into a bold new era of massive expansion and global standards by NJ Travel Service. Headquartered in the heart of Chennai at Nungambakkam, Sahi Travels (Operated by NJ Travel Service) has evolved into a premier, full-service travel and luxury transportation powerhouse.
                 </p>
               </div>
 
@@ -180,65 +187,63 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION B — MILESTONES TIMELINE */}
-        <section className="about-milestones sec" aria-labelledby="milestones-heading">
+        {/* SECTION B — OUR COMPREHENSIVE TRAVEL & LUXURY SOLUTIONS */}
+        <section className="about-milestones sec" aria-labelledby="solutions-eyebrow">
           <div className="wrap">
             <header className="sec-head">
               <div>
-                <p className="eyebrow mono">OUR MILESTONES</p>
-                <h2 id="milestones-heading" className="h2">
-                  Built on trust, <span className="serif-i">measured in journeys.</span>
-                </h2>
+                <p id="solutions-eyebrow" className="eyebrow mono">
+                  Our Comprehensive Travel & Luxury Solutions
+                </p>
+                <p className="about-milestones__intro">
+                  Under the visionary leadership and dynamic management of NJ Travel Service, we have multiplied our horizons to offer comprehensive, end-to-end solutions:
+                </p>
               </div>
             </header>
 
             <div className="about-milestones__track-wrap">
               <div ref={timelineLineRef} className="about-milestones__line" aria-hidden="true" />
               <div className="about-milestones__list">
-                {/* Milestone 1 */}
+                {/* Item 01 */}
                 <article className="about-milestone">
                   <div className="about-milestone__dot mono" aria-hidden="true">01</div>
                   <div className="about-milestone__card">
-                    <span className="about-milestone__year mono">2000</span>
+                    <h3 className="about-milestone__title">Global Travel Solutions</h3>
                     <p className="about-milestone__text">
-                      Journey begins in Keelakarai, Ramanathapuram District.
+                      Domestic and international flight ticketing, worldwide visa assistance, hotel reservations, foreign currency exchange, and travel insurance—all seamlessly delivered under one roof.
                     </p>
                   </div>
                 </article>
 
-                {/* Milestone 2 */}
+                {/* Item 02 */}
                 <article className="about-milestone">
                   <div className="about-milestone__dot mono" aria-hidden="true">02</div>
                   <div className="about-milestone__card">
-                    <span className="about-milestone__year mono">2005</span>
+                    <h3 className="about-milestone__title">Curated Holiday Packages</h3>
                     <p className="about-milestone__text">
-                      Expansion to Chennai.
+                      Tailor-made family vacations, romantic honeymoon getaways, and corporate retreats crafted with precision to match your exact preferences.
                     </p>
                   </div>
                 </article>
 
-                {/* Milestone 3 */}
+                {/* Item 03 */}
                 <article className="about-milestone">
                   <div className="about-milestone__dot mono" aria-hidden="true">03</div>
                   <div className="about-milestone__card">
-                    <div className="about-milestone__metric">
-                      <Counter value={10000} locale="en-IN" suffix="+" />
-                    </div>
+                    <h3 className="about-milestone__title">Royal Luxury Fleet</h3>
                     <p className="about-milestone__text">
-                      travellers served.
+                      An elite, chauffeur-driven fleet featuring ultra-luxury vehicles like Toyota Vellfire, Mercedes-Benz, BMW, and Audi, alongside Innova Crysta, Ertiga, Swift Dzire, and luxury Volvo coaches—catering exclusively to corporate executives, VIPs, celebrities, and film productions.
                     </p>
                   </div>
                 </article>
 
-                {/* Milestone 4 */}
+                {/* Item 04 */}
                 <article className="about-milestone">
                   <div className="about-milestone__dot mono" aria-hidden="true">04</div>
                   <div className="about-milestone__card">
-                    <div className="about-milestone__metric">
-                      <Counter value={2000000} locale="en-IN" suffix="km+" />
-                    </div>
+                    <h3 className="about-milestone__title">B2B & Corporate Management</h3>
                     <p className="about-milestone__text">
-                      covered.
+                      Precision-driven, punctual ground transportation and complete travel logistics for corporate enterprises and large-scale events.
                     </p>
                   </div>
                 </article>
@@ -247,55 +252,61 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION C — WHO WE SERVE AND WHAT WE OFFER */}
-        <section className="about-chips sec" aria-labelledby="scope-heading">
+        {/* SECTION C — KEY PILLAR OUR COMMITMENT & STRENGTH */}
+        <section className="about-principles sec" aria-labelledby="pillars-heading">
           <div className="wrap">
             <header className="sec-head">
               <div>
-                <p className="eyebrow mono">SOLUTIONS & CLIENTELE</p>
-                <h2 id="scope-heading" className="h2">
-                  Tailored support for <span className="serif-i">every journey.</span>
+                <p className="eyebrow mono">Key Pillar</p>
+                <h2 id="pillars-heading" className="h2">
+                  Our Commitment & Strength
                 </h2>
               </div>
             </header>
 
-            <div className="about-chips__container">
-              {/* Row 1: Who we serve */}
-              <div className="about-chips__row">
-                <h3 className="about-chips__row-title mono">Who we serve</h3>
-                <ul className="chips about-chips__list">
-                  <li>Individuals</li>
-                  <li>Families</li>
-                  <li>Businesses</li>
-                  <li>Groups</li>
-                  <li>VIP guests</li>
-                  <li>Production teams</li>
-                </ul>
-              </div>
+            <div className="about-principles__grid">
+              {/* Card 1 */}
+              <article className="about-principle-card">
+                <h3 className="about-principle-card__title">Trusted Since 2000</h3>
+                <p className="about-principle-card__text">
+                  Over two decades of customer trust, integrity, and excellence built by Sahi Travels.
+                </p>
+              </article>
 
-              {/* Row 2: What we provide */}
-              <div className="about-chips__row">
-                <h3 className="about-chips__row-title mono">What we provide</h3>
-                <ul className="chips about-chips__list">
-                  <li>Travel</li>
-                  <li>Tourism</li>
-                  <li>Documentation</li>
-                  <li>Transportation</li>
-                  <li>Event</li>
-                  <li>Premium travel solutions</li>
-                </ul>
-              </div>
+              {/* Card 2 */}
+              <article className="about-principle-card">
+                <h3 className="about-principle-card__title">Powered by NJ Travel Service</h3>
+                <p className="about-principle-card__text">
+                  Modern management, large-scale expansion, and global operational standards from Nungambakkam, Chennai.
+                </p>
+              </article>
+
+              {/* Card 3 */}
+              <article className="about-principle-card">
+                <h3 className="about-principle-card__title">Elite Luxury Fleet</h3>
+                <p className="about-principle-card__text">
+                  Chauffeur-driven luxury cars and coaches specialized for VIPs, corporate leaders, and film productions.
+                </p>
+              </article>
+
+              {/* Card 4 */}
+              <article className="about-principle-card">
+                <h3 className="about-principle-card__title">24/7 Dedicated Support</h3>
+                <p className="about-principle-card__text">
+                  Round-the-clock assistance ensuring seamless travel logistics at every mile.
+                </p>
+              </article>
             </div>
           </div>
         </section>
 
-        {/* SECTION D — CLOSING CALL TO ACTION */}
-        <section className="about-cta sec" aria-labelledby="cta-heading">
+        {/* SECTION D — CLOSING */}
+        <section className="about-cta sec" aria-labelledby="cta-paragraph">
           <div className="wrap">
             <div className="about-cta__content">
-              <h2 id="cta-heading" className="h2 about-cta__heading">
-                Ready when you <span className="serif-i">are.</span>
-              </h2>
+              <p id="cta-paragraph" className="about-cta__body">
+                Sahi Travels is our proud foundation; NJ Travel Service is the driving force propelling us to new heights. We don’t just arrange trips—we craft royal journeys defined by safety, comfort, and 24/7 dedicated hospitality.
+              </p>
               <div className="about-cta__buttons">
                 <Link className="btn btn--navy" href="/#enquiry">
                   Plan a trip <span className="btn__arrow" aria-hidden="true">→</span>
@@ -313,4 +324,3 @@ export default function AboutPage() {
     </>
   );
 }
-

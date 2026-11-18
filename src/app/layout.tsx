@@ -13,7 +13,14 @@ export const metadata: Metadata = {
   description:
     "Ride along with Nila from Sahi Travels: taxis, flights, rail transfers, premium coaches, VIP cars, visas, holidays and events — arranged from one desk in Chennai since 2000.",
   icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'%3E%3Crect x='2' y='2' width='20' height='28' rx='9' fill='%23FAF6F2' stroke='%23C75A3A' stroke-width='2.4'/%3E%3Cpath d='M6 21c4-3 8-4 12-4' stroke='%233A0F34' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 

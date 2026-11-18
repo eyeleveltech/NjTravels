@@ -96,7 +96,7 @@ export function useSiteAnimations() {
       phoneDisplay: "+91 8608925574",
       phoneDial: "+918608925574",
       whatsapp: "918608925574",
-      email: "sahitravelservices@gmail.com",
+      email: "booking@sahitravels.com",
     };
 
     const $ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document): T | null =>

@@ -43,8 +43,8 @@ export const CONTACT_DETAILS: ContactInfo = {
     label: "Message on WhatsApp",
   },
   email: {
-    address: "sahitravelservices@gmail.com",
-    mailtoLink: "mailto:sahitravelservices@gmail.com",
+    address: "booking@sahitravels.com",
+    mailtoLink: "mailto:booking@sahitravels.com",
   },
   website: {
     url: "https://www.sahitravels.com",

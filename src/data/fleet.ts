@@ -9,6 +9,7 @@ export interface Vehicle {
   chips: string[];
   speech: string;
   flip: boolean;
+  source?: string;
 }
 
 export const CATEGORIES = [
@@ -59,14 +60,27 @@ export const FLEET: Vehicle[] = [
   },
   {
     id: "innova-crysta",
-    name: "Toyota Innova Crysta",
+    name: "Toyota Innova",
     category: "mpv",
     seats: "7 seats",
     image: "/assets/img/fleet/innova-crysta.webp",
     avifImage: "/assets/img/fleet/innova-crysta.avif",
-    alt: "Toyota Innova Crysta on a blush studio backdrop",
+    alt: "Toyota Innova on a blush studio backdrop",
     chips: ["Family", "Outstation"],
     speech: "The highway king — plush ride, reclining seats, and effortless power.",
+    flip: false,
+  },
+  {
+    id: "crysta-2",
+    name: "Toyota Innova Crysta",
+    category: "mpv",
+    seats: "7 seats",
+    source: "Innova Crysta.png",
+    image: "/assets/img/fleet/crysta-2.webp?v=2",
+    avifImage: "/assets/img/fleet/crysta-2.avif?v=2",
+    alt: "Pearl white Toyota Innova Crysta MPV on a blush studio backdrop",
+    chips: ["Family", "Outstation"],
+    speech: "Spacious seating for seven, with a smooth ride on longer journeys.",
     flip: false,
   },
   {

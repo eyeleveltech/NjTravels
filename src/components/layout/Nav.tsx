@@ -15,6 +15,29 @@ export default function Nav() {
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const menuItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
 
+  const [logoLoaded, setLogoLoaded] = useState(false);
+  const [isHeroInView, setIsHeroInView] = useState(true);
+  const logoRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (logoRef.current?.complete) {
+      setLogoLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const heroEl = document.getElementById("top");
+    if (!heroEl) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsHeroInView(entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(heroEl);
+    return () => observer.disconnect();
+  }, []);
+
   // Track sticky scroll past 40px
   useEffect(() => {
     const handleScroll = () => {
@@ -128,26 +151,25 @@ export default function Nav() {
   return (
     <>
       <header className={`nav ${isScrolled ? "nav--scrolled" : ""}`} id="nav">
-        <Link className="brand" href="/" aria-label="Sahi Travels — Home">
-          <svg viewBox="0 0 24 32" aria-hidden="true" className="brand__logo">
-            <rect
-              x="2"
-              y="2"
-              width="20"
-              height="28"
-              rx="9"
-              fill="none"
-              stroke="#C75A3A"
-              strokeWidth="2.4"
+        <Link className="brand" href="/" aria-label="Sahi Travels">
+          <span
+            className={`brand__logo-wrap ${logoLoaded ? "is-loaded" : ""} ${logoLoaded && isHeroInView ? "is-animated" : ""}`}
+            style={{
+              animationPlayState: isHeroInView ? "running" : "paused",
+            }}
+          >
+            <img
+              ref={logoRef}
+              src="/assets/img/logo.png"
+              alt="Sahi Travels logo"
+              className="brand__logo"
+              width={35}
+              height={36}
+              loading="eager"
+              decoding="async"
+              onLoad={() => setLogoLoaded(true)}
             />
-            <path
-              d="M6 21c4-3 8-4 12-4"
-              fill="none"
-              stroke="#3A0F34"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-            />
-          </svg>
+          </span>
           <span className="brand__content" style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
             <span className="brand__wordmark" style={{ display: "inline-flex", alignItems: "baseline", gap: "7px" }}>
               <span className="brand__word">SAHI</span>

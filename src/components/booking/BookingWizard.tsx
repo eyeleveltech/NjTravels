@@ -171,6 +171,48 @@ export default function BookingWizard() {
     return FLEET.find((v) => v.id === selectedVehicleId) || FLEET[0];
   }, [selectedVehicleId]);
 
+  const maxVehicleSeats = useMemo(() => {
+    const match = currentVehicle.seats.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 60;
+  }, [currentVehicle]);
+
+  const [adjustedNote, setAdjustedNote] = useState<string | null>(null);
+
+  const handleSelectVehicle = (id: string) => {
+    setSelectedVehicleId(id);
+    setErrors((prev) => {
+      const n = { ...prev };
+      delete n.vehicle;
+      delete n.passengers;
+      return n;
+    });
+    const target = FLEET.find((v) => v.id === id);
+    const targetSeats = target ? parseInt(target.seats.match(/\d+/)?.[0] || "60", 10) : 60;
+    if (passengers > targetSeats) {
+      setPassengers(targetSeats);
+      setAdjustedNote(`Passengers adjusted to ${targetSeats} to match this vehicle.`);
+    } else {
+      setAdjustedNote(null);
+    }
+  };
+
+  // When preselected vehicle from showcase loads, keep passengers at 1 unless user entered higher number, cap at vehicle's seats
+  useEffect(() => {
+    if (selectedVehicleId) {
+      const v = FLEET.find((item) => item.id === selectedVehicleId);
+      if (v) {
+        const seats = parseInt(v.seats.match(/\d+/)?.[0] || "60", 10);
+        setPassengers((prev) => {
+          if (prev > seats) {
+            setAdjustedNote(`Passengers adjusted to ${seats} to match this vehicle.`);
+            return seats;
+          }
+          return Math.max(1, prev);
+        });
+      }
+    }
+  }, [wizardResetTrigger, selectedVehicleId]);
+
   // Calculate the estimate when reaching Screen 5 (Notes & Review)
   useEffect(() => {
     if (screenIndex !== 4) return;
@@ -189,6 +231,7 @@ export default function BookingWizard() {
       timeSlot,
       vehicleId: currentVehicle.id,
       vehicleCategory: currentVehicle.name,
+      passengers,
     };
 
     estimateFare(payload)
@@ -211,7 +254,7 @@ export default function BookingWizard() {
     return () => {
       isMounted = false;
     };
-  }, [screenIndex, tripType, fromPlace, fromQuery, toPlace, toQuery, travelDate, returnDate, timeSlot, currentVehicle]);
+  }, [screenIndex, tripType, fromPlace, fromQuery, toPlace, toQuery, travelDate, returnDate, timeSlot, currentVehicle, passengers]);
 
   // Validate the active screen
   const validateCurrentScreen = (): boolean => {
@@ -271,9 +314,6 @@ export default function BookingWizard() {
       if (!timeSlot) {
         newErrors.timeSlot = "Please select a pickup time slot.";
       }
-      if (isNaN(passengers) || passengers < 1 || passengers > 60) {
-        newErrors.passengers = "Passengers must be between 1 and 60.";
-      }
 
       setErrors(newErrors);
       if (newErrors.travelDate) {
@@ -287,11 +327,14 @@ export default function BookingWizard() {
       // Screen 3: Vehicle
       if (!currentVehicle) {
         newErrors.vehicle = "Please select a vehicle.";
-        setErrors(newErrors);
-        return false;
       }
-      setErrors({});
-      return true;
+      if (isNaN(passengers) || passengers < 1) {
+        newErrors.passengers = "Please enter at least 1 passenger.";
+      } else if (passengers > maxVehicleSeats) {
+        newErrors.passengers = `This vehicle seats up to ${maxVehicleSeats} travellers.`;
+      }
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
     }
 
     if (screenIndex === 3) {
@@ -431,6 +474,10 @@ export default function BookingWizard() {
     }
     if (!mobileNumber.trim()) {
       handleJumpToScreen(3);
+      return;
+    }
+    if (passengers > maxVehicleSeats) {
+      setSubmitError("Passengers exceed this vehicle's capacity.");
       return;
     }
 
@@ -642,7 +689,7 @@ export default function BookingWizard() {
               <div className="wizard-summary-line">
                 <span className="wizard-summary-badge mono">Schedule</span>
                 <span className="wizard-summary-text">
-                  {formatDateDisplay(travelDate)} · {timeSlot} · {passengers} {passengers === 1 ? "passenger" : "passengers"}
+                  {formatDateDisplay(travelDate)} · {timeSlot} · {passengers} pax
                 </span>
                 <button
                   type="button"
@@ -975,51 +1022,6 @@ export default function BookingWizard() {
                   </p>
                 )}
               </div>
-
-              {/* Field: Passengers */}
-              <div className="wizard-field">
-                <label htmlFor={`${compId}-passengers`} className="wizard-field-label">
-                  Number of passengers
-                </label>
-                <div className="wizard-stepper">
-                  <button
-                    type="button"
-                    className="stepper-btn"
-                    onClick={() => setPassengers((prev) => Math.max(1, prev - 1))}
-                    aria-label="Decrease passenger count"
-                  >
-                    −
-                  </button>
-                  <input
-                    id={`${compId}-passengers`}
-                    type="number"
-                    min={1}
-                    max={60}
-                    value={passengers}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      setPassengers(isNaN(val) ? 1 : Math.min(60, Math.max(1, val)));
-                    }}
-                    onKeyDown={handleInputKeyDown}
-                    className="stepper-input mono"
-                    aria-label="Passenger count"
-                  />
-                  <button
-                    type="button"
-                    className="stepper-btn"
-                    onClick={() => setPassengers((prev) => Math.min(60, prev + 1))}
-                    aria-label="Increase passenger count"
-                  >
-                    +
-                  </button>
-                </div>
-                <p className="wizard-hint">Comfortable capacity from 1 to 60 travellers.</p>
-                {errors.passengers && (
-                  <p className="wizard-field-error" role="alert">
-                    {errors.passengers}
-                  </p>
-                )}
-              </div>
             </div>
           </div>
         )}
@@ -1042,11 +1044,67 @@ export default function BookingWizard() {
 
             <WizardVehicleCarousel
               selectedId={selectedVehicleId}
-              onSelectVehicle={(id) => {
-                setSelectedVehicleId(id);
-                setErrors({});
-              }}
+              onSelectVehicle={handleSelectVehicle}
             />
+
+            {/* Field: Passengers */}
+            <div className="wizard-field" style={{ marginTop: "24px" }}>
+              <label htmlFor={`${compId}-passengers`} className="wizard-field-label">
+                Number of passengers
+              </label>
+              <div className="wizard-stepper">
+                <button
+                  type="button"
+                  className="stepper-btn"
+                  onClick={() => {
+                    setPassengers((prev) => Math.max(1, prev - 1));
+                    setAdjustedNote(null);
+                  }}
+                  aria-label="Decrease passenger count"
+                  disabled={passengers <= 1}
+                >
+                  −
+                </button>
+                <input
+                  id={`${compId}-passengers`}
+                  type="number"
+                  min={1}
+                  max={maxVehicleSeats}
+                  value={passengers}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    setPassengers(isNaN(val) ? 1 : Math.min(maxVehicleSeats, Math.max(1, val)));
+                    setAdjustedNote(null);
+                  }}
+                  onKeyDown={handleInputKeyDown}
+                  className="stepper-input mono"
+                  aria-label="Passenger count"
+                />
+                <button
+                  type="button"
+                  className="stepper-btn"
+                  onClick={() => {
+                    setPassengers((prev) => Math.min(maxVehicleSeats, prev + 1));
+                    setAdjustedNote(null);
+                  }}
+                  aria-label="Increase passenger count"
+                  disabled={passengers >= maxVehicleSeats}
+                >
+                  +
+                </button>
+              </div>
+              <p className="wizard-hint">This vehicle seats up to {maxVehicleSeats} travellers.</p>
+              {adjustedNote && (
+                <p className="wizard-adjust-note" style={{ color: "var(--color-terracotta)", marginTop: "6px", fontSize: "14px", fontWeight: 500 }}>
+                  {adjustedNote}
+                </p>
+              )}
+              {errors.passengers && (
+                <p className="wizard-field-error" role="alert">
+                  {errors.passengers}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -1285,6 +1343,22 @@ export default function BookingWizard() {
                         </span>
                         <span>₹{estimateData.distanceCharge.toLocaleString("en-IN")}</span>
                       </div>
+
+                      <div className="bf-estimate-card__row">
+                        <span className="bf-estimate-card__row-label">
+                          Driver batta ({estimateData.days} {estimateData.days === 1 ? "day" : "days"})
+                        </span>
+                        <span>₹{estimateData.driverBatta.toLocaleString("en-IN")}</span>
+                      </div>
+
+                      {estimateData.nightAllowance > 0 && (
+                        <div className="bf-estimate-card__row">
+                          <span className="bf-estimate-card__row-label">
+                            Night allowance ({estimateData.nights} {estimateData.nights === 1 ? "night" : "nights"})
+                          </span>
+                          <span>₹{estimateData.nightAllowance.toLocaleString("en-IN")}</span>
+                        </div>
+                      )}
                     </div>
 
                     <p className="bf-estimate-card__disclaimer">
